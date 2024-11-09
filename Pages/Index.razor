@@ -1,4 +1,5 @@
 ﻿@page "/index.html"
+@using System.Text.Json
 @using UserInfo;
 @inherits IndexPage
 
@@ -29,32 +30,17 @@
         </thead>
         <tbody>
             <tr>
-                <td>@userInfoModel.Username</td>
+                <td>@userInfoModel.DisplayName</td>
                 <td>@userInfoModel.UserId</td>
-                <td><img src=@userInfoModel.AvatarDisplayLink alt="User Picture" /></td>
+                <td><img src=@userInfoModel.AvatarDisplayLink alt="User Avatar" /></td>
             </tr>
         </tbody>
     </table>
 
-    <p>Cookies: @userInfoModel.Cookies</p>
-    <p>Created: @userInfoModel.Created</p>
-    <p>Currencies: @userInfoModel.Currencies</p>
-    <p>Data Updated: @userInfoModel.DataUpdated</p>
-    <p>Deleted: @userInfoModel.Deleted</p>
     <p>DisplayName: @userInfoModel.DisplayName</p>
-    <p>Email: @userInfoModel.Email</p>
     <p>Is Bot: @userInfoModel.IsBot</p>
-    <p>MetaData: @userInfoModel.Metadata</p>
-    <p>Notifications: @userInfoModel.Notifications</p>
-    <p>Pending: @userInfoModel.Pending</p>
-    <p>Phone: @userInfoModel.RealName</p>
-    <p>Solicitable: @userInfoModel.Solicitable</p>
-    <p>SummonerName: @userInfoModel.SummonerName</p>
-    <p>SummonerRegion: @userInfoModel.SummonerRegion</p>
-    <p>Token: @userInfoModel.Token</p>
     <p>UserId: @userInfoModel.UserId</p>
     <p>Username: @userInfoModel.Username</p>
-    <p>Verification: @userInfoModel.Verification</p>
 }
 
 @code {
@@ -62,7 +48,23 @@
     {
         using (var httpClient = new HttpClient())
         {
-            userInfoModel = await httpClient.GetFromJsonAsync<UserInfoModel>($"https://api.sleeper.app/v1/user/{usernameInput}");
+            try
+            {
+                HttpResponseMessage response = await httpClient.GetAsync($"https://api.sleeper.app/v1/user/{usernameInput}");
+
+                // Ensure a successful response
+                response.EnsureSuccessStatusCode();
+
+                // Read and deserialize the response content
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+                userInfoModel = UserInfoModel.FromJson(jsonResponse);
+            }
+            catch (HttpRequestException e)
+            {
+                Console.WriteLine($"Failed to retrieve data for: {usernameInput}");
+                Console.WriteLine($"Error({e.Message}): {e.Message}");
+            }
+
         }
     } 
 } 
