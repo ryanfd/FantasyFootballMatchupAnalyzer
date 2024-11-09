@@ -3,61 +3,66 @@
 @inherits IndexPage
 
 @code {
-    UserInfoModel userInfoModel;
+    private UserInfoModel userInfoModel;
+    private string usernameInput = "";
 }
 
 <h1>Fantasy Football Matchup Analyzer</h1>
 
 <h2>Get your Sleeper Leagues:</h2>
 
-<form>
-    <label for="username">Username:</label>
-    <input type="text" name="username" @bind="displayName" />
-    <button type="submit" @onclick="Save">OK</button>
+<form id="userDataForm" method="get">
+    <label for="usernameInput">Username:</label>
+    <input id="usernameInputField" type="text" name="usernameInput" @bind=usernameInput />
+    <button type="button" @onclick="RequestUserData">Get User Data</button>
 </form>
 
-@{
-    if (userInfoModel == null || string.IsNullOrEmpty(displayName))
-    {
-        return;
-    }
-
+@if (!string.IsNullOrEmpty(usernameInput) && userInfoModel != null)
+{
     <table>
         <thead>
             <tr>
-                <th>@displayName 's Data</th>
+                <th>Username</th>
+                <th>UserID</th>
+                <th>Avatar</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-            <td>@userInfoModel.UserId</td>
+                <td>@userInfoModel.Username</td>
+                <td>@userInfoModel.UserId</td>
+                <td><img src=@userInfoModel.AvatarDisplayLink alt="User Picture" /></td>
             </tr>
         </tbody>
-
     </table>
+
+    <p>Cookies: @userInfoModel.Cookies</p>
+    <p>Created: @userInfoModel.Created</p>
+    <p>Currencies: @userInfoModel.Currencies</p>
+    <p>Data Updated: @userInfoModel.DataUpdated</p>
+    <p>Deleted: @userInfoModel.Deleted</p>
+    <p>DisplayName: @userInfoModel.DisplayName</p>
+    <p>Email: @userInfoModel.Email</p>
+    <p>Is Bot: @userInfoModel.IsBot</p>
+    <p>MetaData: @userInfoModel.Metadata</p>
+    <p>Notifications: @userInfoModel.Notifications</p>
+    <p>Pending: @userInfoModel.Pending</p>
+    <p>Phone: @userInfoModel.RealName</p>
+    <p>Solicitable: @userInfoModel.Solicitable</p>
+    <p>SummonerName: @userInfoModel.SummonerName</p>
+    <p>SummonerRegion: @userInfoModel.SummonerRegion</p>
+    <p>Token: @userInfoModel.Token</p>
+    <p>UserId: @userInfoModel.UserId</p>
+    <p>Username: @userInfoModel.Username</p>
+    <p>Verification: @userInfoModel.Verification</p>
 }
-
-
 
 @code {
-    private static readonly HttpClient httpClient = new();
-    private string displayName;
-
-    public void OnGetUserData()
+    private async Task RequestUserData()
     {
-        var task = httpClient.GetAsync($"https://api.sleeper.app/v1/user/{displayName}");
-        HttpResponseMessage result = task.Result;
-
-        if (result.IsSuccessStatusCode)
+        using (var httpClient = new HttpClient())
         {
-            Task<string> readString = result.Content.ReadAsStringAsync();
-            var jsonString = readString.Result;
-            UserInfoModel.FromJson(jsonString);
+            userInfoModel = await httpClient.GetFromJsonAsync<UserInfoModel>($"https://api.sleeper.app/v1/user/{usernameInput}");
         }
-    }
-
-    private void Save()
-    {
-        userInfoModel = new UserInfoModel(displayName);
-    }
-}
+    } 
+} 
