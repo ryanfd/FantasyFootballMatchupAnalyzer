@@ -6,10 +6,12 @@
 /// </summary>
 public class FantasyFootballLeague
 {
-	public FantasyFootballLeague()
+    string userId;
+
+	public FantasyFootballLeague(string userId)
 	{
-        //
-        // TODO: Add constructor logic here
-        //
+        this.userId = userId;
+
+
     }
 }

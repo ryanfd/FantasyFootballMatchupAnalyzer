@@ -1,12 +1,17 @@
 ﻿@page "/index.html"
 @using System.Text.Json
-@using UserInfo;
+@using FantasyFootballMatchupAnalyzer.Classes.Helpers
+@using Newtonsoft.Json
+@using UserInfo
 @inherits IndexPage
 
 @code {
     private UserInfoModel userInfoModel;
     private string usernameInput = "";
+    private ErrorModal errorModal;
 }
+
+<ErrorModal @ref="errorModal" />
 
 <h1>Fantasy Football Matchup Analyzer</h1>
 
@@ -46,25 +51,22 @@
 @code {
     private async Task RequestUserData()
     {
-        using (var httpClient = new HttpClient())
+        if (userInfoModel != null && usernameInput.ToLower() == userInfoModel.Username)
         {
-            try
-            {
-                HttpResponseMessage response = await httpClient.GetAsync($"https://api.sleeper.app/v1/user/{usernameInput}");
-
-                // Ensure a successful response
-                response.EnsureSuccessStatusCode();
-
-                // Read and deserialize the response content
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-                userInfoModel = UserInfoModel.FromJson(jsonResponse);
-            }
-            catch (HttpRequestException e)
-            {
-                Console.WriteLine($"Failed to retrieve data for: {usernameInput}");
-                Console.WriteLine($"Error({e.Message}): {e.Message}");
-            }
-
+            return;
         }
-    } 
+
+        try
+        {
+            userInfoModel = await RequestDataHelper.RequestData<UserInfoModel>($"https://api.sleeper.app/v1/user/{usernameInput}");
+        }
+        catch (HttpRequestException e)
+        {
+            errorModal.ShowError($"Error({e.StatusCode}): {e.Message}");
+        }
+        catch (Exception e)
+        {
+            errorModal.ShowError($"Error({e.Message}");
+        }
+    }
 } 
