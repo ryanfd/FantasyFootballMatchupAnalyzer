@@ -8,6 +8,8 @@
 @code {
     private UserInfoModel userInfoModel;
     private string usernameInput = "";
+    private List<FantasyFootballLeague> userLeagues = new();
+
     private ErrorModal errorModal;
 }
 
@@ -46,6 +48,22 @@
     <p>Is Bot: @userInfoModel.IsBot</p>
     <p>UserId: @userInfoModel.UserId</p>
     <p>Username: @userInfoModel.Username</p>
+
+    @if (userLeagues == null || userLeagues.Count == 0)
+    {
+        <p>COULD NOT FIND LEAGUE DATA</p>
+        return;
+    }
+
+    <h3>@(userInfoModel.DisplayName)'s Leagues</h3>
+
+    @foreach (var league in userLeagues)
+    {
+        <div>
+            <img src=@league.ImageDisplayLink alt="League Avatar" />
+            <h4>@league.Name</h4>
+        </div>
+    }
 }
 
 @code {
@@ -58,7 +76,8 @@
 
         try
         {
-            userInfoModel = await RequestDataHelper.RequestData<UserInfoModel>($"https://api.sleeper.app/v1/user/{usernameInput}");
+            userInfoModel = await RequestDataHelper.RequestData<UserInfoModel>(ApiCalls.SleeperUserApiUri + usernameInput);
+            userLeagues = await RequestDataHelper.RequestData<List<FantasyFootballLeague>>(ApiCalls.SleeperUserLeaguesApiUri(userInfoModel.UserId));
         }
         catch (HttpRequestException e)
         {
