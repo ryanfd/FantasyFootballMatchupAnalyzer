@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace FantasyFootballMatchupAnalyzer.Classes
 {
@@ -8,20 +7,20 @@ namespace FantasyFootballMatchupAnalyzer.Classes
         int leagueId;
 
         [JsonProperty("starters")]
-        public List<string> starters { get; } = new List<string>();
+        public string[] starters { get; set; }
 
         [JsonProperty("roster_id")]
-        public string RosterId { get; }
+        public string RosterId { get; set; }
 
         [JsonProperty("players")]
-        public List<string> Players { get; } = new List<string>();
+        public string[] Players { get; set; }
 
         [JsonProperty("owner_id")]
-        public string OwnerId { get; }
+        public string OwnerId { get; set; }
 
-        public Roster(int leagueId)
-        {
-            this.leagueId = leagueId;
-        }
+        //public Roster(int leagueId)
+        //{
+        //    this.leagueId = leagueId;
+        //}
     }
 }

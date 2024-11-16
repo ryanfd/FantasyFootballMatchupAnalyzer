@@ -10,7 +10,7 @@
     private string usernameInput = "";
     private List<FantasyFootballLeague> userLeagues = new();
 
-    private ErrorModal errorModal;
+    private ErrorModal errorModal;   
 }
 
 <ErrorModal @ref="errorModal" />
@@ -25,30 +25,10 @@
     <button type="button" @onclick="RequestUserData">Get User Data</button>
 </form>
 
+
+
 @if (!string.IsNullOrEmpty(usernameInput) && userInfoModel != null)
 {
-    <table>
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>UserID</th>
-                <th>Avatar</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>@userInfoModel.DisplayName</td>
-                <td>@userInfoModel.UserId</td>
-                <td><img src=@userInfoModel.AvatarDisplayLink alt="User Avatar" /></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <p>DisplayName: @userInfoModel.DisplayName</p>
-    <p>Is Bot: @userInfoModel.IsBot</p>
-    <p>UserId: @userInfoModel.UserId</p>
-    <p>Username: @userInfoModel.Username</p>
-
     @if (userLeagues == null || userLeagues.Count == 0)
     {
         <p>COULD NOT FIND LEAGUE DATA</p>
@@ -59,9 +39,17 @@
 
     @foreach (var league in userLeagues)
     {
+        string pointsPerReceptionType = @league.ScoringSettings.Reception == 1.0
+            ? "PPR"
+            : @league.ScoringSettings.Reception == 0.5
+                ? "Half-PPR"
+                : "Zero-PPR";
+
         <div>
             <img src=@league.ImageDisplayLink alt="League Avatar" />
             <h4>@league.Name</h4>
+            <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
+            <button type="submit" a=>Check out this roster</button>
         </div>
     }
 }
@@ -77,7 +65,9 @@
         try
         {
             userInfoModel = await RequestDataHelper.RequestData<UserInfoModel>(ApiCalls.SleeperUserApiUri + usernameInput);
-            userLeagues = await RequestDataHelper.RequestData<List<FantasyFootballLeague>>(ApiCalls.SleeperUserLeaguesApiUri(userInfoModel.UserId));
+            userLeagues = await RequestDataHelper.RequestData<List<FantasyFootballLeague>>(
+                ApiCalls.SleeperUserCurrentYearLeaguesApiUri(userInfoModel.UserId)
+            );
         }
         catch (HttpRequestException e)
         {

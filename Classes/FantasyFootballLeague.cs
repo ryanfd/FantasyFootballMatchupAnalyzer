@@ -23,8 +23,8 @@ public class FantasyFootballLeague
     [JsonProperty("season")]
     public string Season { get; set; }
 
-    [JsonProperty("score_settings")]
-    public object ScoreSettings { get; set; }
+    [JsonProperty("scoring_settings")]
+    public ScoringSettings ScoringSettings { get; set; }
 
     //[JsonProperty("roster_positions")]
     //public Roster[] RosterPositions { get; set; }
