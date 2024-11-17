@@ -1,5 +1,8 @@
-﻿<h3>Roster</h3>
+﻿@page "/roster.html/{TeamId}"
+
+<h3>Roster</h3>
 
 @code {
-
+    [Parameter]
+    public string TeamId { get; set; }
 }

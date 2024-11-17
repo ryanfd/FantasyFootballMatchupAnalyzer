@@ -7,10 +7,9 @@
 
 @code {
     private UserInfoModel userInfoModel;
-    private string usernameInput = "";
     private List<FantasyFootballLeague> userLeagues = new();
-
-    private ErrorModal errorModal;   
+    private FormModel formModel = new();
+    private ErrorModal errorModal;
 }
 
 <ErrorModal @ref="errorModal" />
@@ -19,19 +18,25 @@
 
 <h2>Get your Sleeper Leagues:</h2>
 
-<form id="userDataForm" method="get">
-    <label for="usernameInput">Username:</label>
-    <input id="usernameInputField" type="text" name="usernameInput" @bind=usernameInput />
-    <button type="button" @onclick="RequestUserData">Get User Data</button>
-</form>
+<EditForm Model="@formModel" OnSubmit="RequestUserData">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
+    <fieldset>
+        <legend>Find Your Leagues</legend>
+        <div>
+            <label>Username:</label>
+            <InputText @bind-Value="formModel.Username" />
+        </div>
+        <button type="submit">Submit</button>
+    </fieldset>
+</EditForm>
 
-
-@if (!string.IsNullOrEmpty(usernameInput) && userInfoModel != null)
+@if (userInfoModel != null)
 {
     @if (userLeagues == null || userLeagues.Count == 0)
     {
-        <p>COULD NOT FIND LEAGUE DATA</p>
+        <p>NO LEAGUE DATA FOUND</p>
         return;
     }
 
@@ -45,26 +50,41 @@
                 ? "Half-PPR"
                 : "Zero-PPR";
 
-        <div>
+        <form action="roster.html" method="get">
+            <fieldset>
+                @* <legend>@league.Name</legend> *@
+                <img src=@league.ImageDisplayLink alt="League Avatar" />
+                <h4>@league.Name</h4>
+                <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
+                <button type="submit">Check out your roster</button>
+            </fieldset>
+        </form>
+
+        @* <div>
             <img src=@league.ImageDisplayLink alt="League Avatar" />
             <h4>@league.Name</h4>
             <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
-            <button type="submit" a=>Check out this roster</button>
-        </div>
+            <button class="btn btn-primary" type="submit">Check out this roster</button>
+        </div> *@
     }
 }
 
 @code {
+    private class FormModel
+    {
+        public string Username { get; set; }
+    }
+
     private async Task RequestUserData()
     {
-        if (userInfoModel != null && usernameInput.ToLower() == userInfoModel.Username)
+        if (string.IsNullOrEmpty(formModel.Username))
         {
             return;
         }
 
         try
         {
-            userInfoModel = await RequestDataHelper.RequestData<UserInfoModel>(ApiCalls.SleeperUserApiUri + usernameInput);
+            userInfoModel = await RequestDataHelper.RequestData<UserInfoModel>(ApiCalls.SleeperUserApiUri + formModel.Username);
             userLeagues = await RequestDataHelper.RequestData<List<FantasyFootballLeague>>(
                 ApiCalls.SleeperUserCurrentYearLeaguesApiUri(userInfoModel.UserId)
             );
