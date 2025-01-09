@@ -86,7 +86,8 @@
         {
             userInfoModel = await RequestDataHelper.RequestData<UserInfoModel>(ApiCalls.SleeperUserApiUri + formModel.Username);
             userLeagues = await RequestDataHelper.RequestData<List<FantasyFootballLeague>>(
-                ApiCalls.SleeperUserCurrentYearLeaguesApiUri(userInfoModel.UserId)
+                // ApiCalls.SleeperUserCurrentYearLeaguesApiUri(userInfoModel.UserId)
+                ApiCalls.SleeperUserAll2024LeaguesApiUri(userInfoModel.UserId)
             );
         }
         catch (HttpRequestException e)
