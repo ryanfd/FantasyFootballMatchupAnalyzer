@@ -119,13 +119,14 @@
     private async Task NavigateToRoster(string leagueId)
     {
         List<Roster> rosters = await RequestDataHelper.RequestData<List<Roster>>(ApiCalls.SleeperLeagueRosterApiUri(leagueId));
+        errorModal.ShowError($"{rosters.Count}");
 
         foreach (var roster in rosters)
         {
-            // if (roster.OwnerId != userInfoModel.UserId)
-            // {
-            //     return;
-            // }
+            if (roster.OwnerId != userInfoModel.UserId)
+            {
+                return;
+            }
 
             NavigationManager.NavigateTo($"roster.html/{roster.OwnerId}");
         }
