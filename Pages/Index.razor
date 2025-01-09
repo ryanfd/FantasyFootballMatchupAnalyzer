@@ -50,15 +50,15 @@
                 ? "Half-PPR"
                 : "Zero-PPR";
 
-        <form action="roster.html" method="get">
+        @* @<form action="roster.html" method="get">
             <fieldset>
-                @* <legend>@league.Name</legend> *@
+                 <legend>@league.Name</legend> 
                 <img src=@league.ImageDisplayLink alt="League Avatar" />
                 <h4>@league.Name</h4>
                 <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
                 <button type="submit">Check out your roster</button>
             </fieldset>
-        </form>
+        </form> *@
 
         @* <div>
             <img src=@league.ImageDisplayLink alt="League Avatar" />
@@ -66,6 +66,22 @@
             <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
             <button class="btn btn-primary" type="submit">Check out this roster</button>
         </div> *@
+
+        @* <form>
+            <fieldset>
+                <img src=@league.ImageDisplayLink alt="League Avatar" />
+                <h4>@league.Name</h4>
+                <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
+                <button @onclick=@(() => NavigateToRoster(league.LeagueId)) type="submit">Check out your roster</button>
+             </fieldset>
+         </form> *@
+
+         <div>
+            <img src=@league.ImageDisplayLink alt="League Avatar" />
+            <h4>@league.Name</h4>
+            <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
+            <button @onclick=@(() => NavigateToRoster(league.LeagueId))>Check out your roster</button>
+         </div>
     }
 }
 
@@ -97,6 +113,21 @@
         catch (Exception e)
         {
             errorModal.ShowError($"Error({e.Message}");
+        }
+    }
+
+    private async Task NavigateToRoster(string leagueId)
+    {
+        List<Roster> rosters = await RequestDataHelper.RequestData<List<Roster>>(ApiCalls.SleeperLeagueRosterApiUri(leagueId));
+
+        foreach (var roster in rosters)
+        {
+            // if (roster.OwnerId != userInfoModel.UserId)
+            // {
+            //     return;
+            // }
+
+            NavigationManager.NavigateTo($"roster.html/{roster.OwnerId}");
         }
     }
 } 

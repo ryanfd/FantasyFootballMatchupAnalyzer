@@ -4,8 +4,6 @@ namespace FantasyFootballMatchupAnalyzer.Classes
 {
     public class Roster
     {
-        int leagueId;
-
         [JsonProperty("starters")]
         public string[] starters { get; set; }
 
@@ -18,9 +16,7 @@ namespace FantasyFootballMatchupAnalyzer.Classes
         [JsonProperty("owner_id")]
         public string OwnerId { get; set; }
 
-        //public Roster(int leagueId)
-        //{
-        //    this.leagueId = leagueId;
-        //}
+        [JsonProperty("league_id")]
+        public string LeagueId { get; set; }
     }
 }
