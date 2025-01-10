@@ -1,5 +1,6 @@
 ﻿@page "/index.html"
 @using System.Text.Json
+@using FantasyFootballMatchupAnalyzer.Classes
 @using FantasyFootballMatchupAnalyzer.Classes.Helpers
 @using Newtonsoft.Json
 @using UserInfo
@@ -50,32 +51,6 @@
                 ? "Half-PPR"
                 : "Zero-PPR";
 
-        @* @<form action="roster.html" method="get">
-            <fieldset>
-                 <legend>@league.Name</legend> 
-                <img src=@league.ImageDisplayLink alt="League Avatar" />
-                <h4>@league.Name</h4>
-                <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
-                <button type="submit">Check out your roster</button>
-            </fieldset>
-        </form> *@
-
-        @* <div>
-            <img src=@league.ImageDisplayLink alt="League Avatar" />
-            <h4>@league.Name</h4>
-            <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
-            <button class="btn btn-primary" type="submit">Check out this roster</button>
-        </div> *@
-
-        @* <form>
-            <fieldset>
-                <img src=@league.ImageDisplayLink alt="League Avatar" />
-                <h4>@league.Name</h4>
-                <h5>@league.TotalRosters Team @pointsPerReceptionType League</h5>
-                <button @onclick=@(() => NavigateToRoster(league.LeagueId)) type="submit">Check out your roster</button>
-             </fieldset>
-         </form> *@
-
          <div>
             <img src=@league.ImageDisplayLink alt="League Avatar" />
             <h4>@league.Name</h4>
@@ -103,7 +78,7 @@
             userInfoModel = await RequestDataHelper.RequestData<UserInfoModel>(ApiCalls.SleeperUserApiUri + formModel.Username);
             userLeagues = await RequestDataHelper.RequestData<List<FantasyFootballLeague>>(
                 // ApiCalls.SleeperUserCurrentYearLeaguesApiUri(userInfoModel.UserId)
-                ApiCalls.SleeperUserAll2024LeaguesApiUri(userInfoModel.UserId)
+                $"https://api.sleeper.app/v1/user/{userInfoModel.UserId}/leagues/nfl/2024"
             );
         }
         catch (HttpRequestException e)
@@ -118,17 +93,12 @@
 
     private async Task NavigateToRoster(string leagueId)
     {
-        List<Roster> rosters = await RequestDataHelper.RequestData<List<Roster>>(ApiCalls.SleeperLeagueRosterApiUri(leagueId));
-        errorModal.ShowError($"{rosters.Count}");
+        // List<Roster> rosters = await RequestDataHelper.RequestData<List<Roster>>(ApiCalls.SleeperLeagueRosterApiUri(leagueId));
+        // var roster = rosters.Single<Roster>(r => r.OwnerId.Equals(userInfoModel.UserId));
+        // var ownerId = rosters.Single(r => r.OwnerId == userInfoModel.UserId).OwnerId;
 
-        foreach (var roster in rosters)
-        {
-            if (roster.OwnerId != userInfoModel.UserId)
-            {
-                return;
-            }
+        // NavigationManager.NavigateTo($"displayroster.html/{ownerId}");
 
-            NavigationManager.NavigateTo($"roster.html/{roster.OwnerId}");
-        }
+        NavigationManager.NavigateTo($"displayroster.html/{leagueId}/{userInfoModel.UserId}");
     }
 } 

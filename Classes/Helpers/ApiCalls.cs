@@ -8,6 +8,5 @@ namespace FantasyFootballMatchupAnalyzer.Classes.Helpers
         public static string SleeperUserCurrentYearLeaguesApiUri(string userId) => 
             $"https://api.sleeper.app/v1/user/{userId}/leagues/nfl/{DateTime.Now.Year.ToString()}";
         public static string SleeperLeagueRosterApiUri(string leagueId) => $"https://api.sleeper.app/v1/league/{leagueId}/rosters";
-        public static string SleeperUserAll2024LeaguesApiUri(string userId) => $"https://api.sleeper.app/v1/user/{userId}/leagues/nfl/2024";
     }
 }

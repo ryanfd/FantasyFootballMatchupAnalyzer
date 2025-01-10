@@ -1,0 +1,38 @@
+﻿@page "/displayroster.html/{LeagueId}/{OwnerId}"
+@using FantasyFootballMatchupAnalyzer.Classes
+@using FantasyFootballMatchupAnalyzer.Classes.Helpers
+
+<h3>Roster (@roster.starters)</h3>
+
+@code {
+    [Parameter]
+    public string LeagueId { get; set; }
+
+    [Parameter]
+    public string OwnerId { get; set; }
+
+    // [Parameter]
+    // public string[] starters { get; set; }
+
+    // [Parameter]
+    // public string RosterId { get; set; }
+
+    // [Parameter]
+    // public string[] Players { get; set; }
+
+    // [Parameter]
+    // public string LeagueId { get; set; }
+
+    Roster roster = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetRosterData();
+    }
+
+    private async Task GetRosterData()
+    {
+        List<Roster> rosters = await RequestDataHelper.RequestData<List<Roster>>(ApiCalls.SleeperLeagueRosterApiUri(LeagueId));
+        roster = rosters.Single<Roster>(r => r.OwnerId.Equals(OwnerId));
+    }
+}
